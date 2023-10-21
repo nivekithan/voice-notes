@@ -4,6 +4,11 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+dependencies:
+  '@cloudflare/ai':
+    specifier: ^1.0.22
+    version: 1.0.22
+
 devDependencies:
   '@cloudflare/workers-types':
     specifier: ^4.20230419.0
@@ -16,6 +21,10 @@ devDependencies:
     version: 3.14.0
 
 packages:
+
+  /@cloudflare/ai@1.0.22:
+    resolution: {integrity: sha512-Juxzxr05ikVKaXGeeODq6ZrUFRWVCB9BJMYpoBEpNo105kGiISqpdFgREoV1HPZPYdkq9AHA2rXM/H+dQNWNFw==}
+    dev: false
 
   /@cloudflare/kv-asset-handler@0.2.0:
     resolution: {integrity: sha512-MVbXLbTcAotOPUj0pAMhVtJ+3/kFkwJqc5qNOleOZTv6QkZZABDMS21dSrSlVswEHwrpWC03e4fWytjqKvuE2A==}
