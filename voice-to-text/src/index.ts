@@ -1,17 +1,19 @@
-import { Ai } from '@cloudflare/ai';
+import { OpenAI } from 'openai';
 
 export interface Env {
-	AI: any;
+	OPENAI_API_KEY: string;
 }
 
 export default {
 	async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
 		try {
-			const recording = await request.arrayBuffer();
+			const openAi = new OpenAI({ apiKey: env.OPENAI_API_KEY });
 
-			const ai = new Ai(env.AI);
+			const arrayBuffer = await request.arrayBuffer();
+			const file = new File([arrayBuffer], 'audio.wav');
 
-			const response = await ai.run('@cf/openai/whisper', { audio: [...new Uint8Array(recording)] });
+			const transcript = await openAi.audio.transcriptions.create({ model: 'whisper-1', file: file });
+			const response = transcript.text;
 
 			return Response.json({ response });
 		} catch (err) {

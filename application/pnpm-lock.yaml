@@ -20,6 +20,9 @@ dependencies:
   '@teamhanko/hanko-elements':
     specifier: ^0.9.0
     version: 0.9.0
+  audiobuffer-to-wav:
+    specifier: ^1.0.0
+    version: 1.0.0
   cookie:
     specifier: ^0.5.0
     version: 0.5.0
@@ -49,6 +52,9 @@ devDependencies:
   '@remix-run/eslint-config':
     specifier: ^2.1.0
     version: 2.1.0(eslint@8.52.0)(react@18.2.0)(typescript@5.2.2)
+  '@types/audiobuffer-to-wav':
+    specifier: ^1.0.3
+    version: 1.0.3
   '@types/cookie':
     specifier: ^0.5.3
     version: 0.5.3
@@ -1632,6 +1638,10 @@ packages:
     resolution: {integrity: sha512-0Z6Tr7wjKJIk4OUEjVUQMtyunLDy339vcMaj38Kpj6jM2OE1p3S4kXExKZ7a3uXQAPCoy3sbrP1wibDKaf39oA==}
     dev: true
 
+  /@types/audiobuffer-to-wav@1.0.3:
+    resolution: {integrity: sha512-u1cTmILBRfH4FdwKsneCkxTX/sWaCQb1iEhYxNcMNdbyKe+7DJk38Nn8mtL3iosqvGoDf+LZ3HtczZNMKmeMOg==}
+    dev: true
+
   /@types/cookie@0.4.1:
     resolution: {integrity: sha512-XW/Aa8APYr6jSVVA1y/DEIZX0/GMKLEVekNG727R8cs56ahETkRAy/3DR7+fJyh7oUgGwNQaRfXCun0+KbWY7Q==}
 
@@ -2130,6 +2140,10 @@ packages:
     dependencies:
       has-symbols: 1.0.3
     dev: true
+
+  /audiobuffer-to-wav@1.0.0:
+    resolution: {integrity: sha512-CAoir4NRrAzAgYo20tEMiKZR84coE8bq/L+H2kwAaULVY4+0xySsEVtNT5raqpzmH6y0pqzY6EmoViLd9W8F/w==}
+    dev: false
 
   /available-typed-arrays@1.0.5:
     resolution: {integrity: sha512-DMD0KiN46eipeziST1LPP/STfDU0sufISXmjSgvVsoU2tqxctQeASejWcfNtxYKqETM1UxQ8sp2OrSBWpHY6sw==}

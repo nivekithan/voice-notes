@@ -2,7 +2,6 @@ import {
   json,
   type LoaderFunctionArgs,
   type MetaFunction,
-  type ActionFunctionArgs,
 } from "@remix-run/cloudflare";
 import { useState } from "react";
 import { requireUser } from "~/lib/utils/auth.server";
@@ -57,7 +56,7 @@ export default function Index() {
 
     setRecordingStatus("RECORDING");
 
-    setTimeout(() => mediaRecorder.stop(), 1_000);
+    setTimeout(() => mediaRecorder.stop(), 10_000);
 
     mediaRecorder.addEventListener("stop", async () => {
       try {

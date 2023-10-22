@@ -6,7 +6,7 @@ import { z } from "zod";
 const pageUrl = "http://localhost:8787";
 
 const AudioToTextApiSchema = z.object({
-  response: z.object({ text: z.string() }),
+  response: z.string(),
 });
 
 export async function convertAudioToText({ audio }: { audio: ArrayBuffer }) {
@@ -16,7 +16,9 @@ export async function convertAudioToText({ audio }: { audio: ArrayBuffer }) {
   });
   const payload = await res.json();
 
+  console.log({ payload });
+
   const { response } = AudioToTextApiSchema.parse(payload);
 
-  return response.text;
+  return response;
 }

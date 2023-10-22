@@ -20,6 +20,9 @@ export async function convertAudioToTextClient({
   audio: ArrayBuffer;
 }) {
   const url = "http://localhost:8788/resources/audioToText";
+  // const audioContext = new AudioContext();
+  // const audioBuffer = await audioContext.decodeAudioData(audio);
+  // const wavAudio = toWav(audioBuffer);
 
   const res = await fetch(url, {
     body: audio,
