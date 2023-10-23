@@ -45,7 +45,6 @@ export default function Index() {
     const mediaRecorder = new MediaRecorder(mediaStream, {});
 
     console.log("After Media Recorder");
-
     const mediaBlobs: Blob[] = [];
 
     mediaRecorder.addEventListener("dataavailable", (e) => {
@@ -56,7 +55,7 @@ export default function Index() {
 
     setRecordingStatus("RECORDING");
 
-    setTimeout(() => mediaRecorder.stop(), 10_000);
+    setTimeout(() => mediaRecorder.stop(), 60_000);
 
     mediaRecorder.addEventListener("stop", async () => {
       try {
