@@ -9,7 +9,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
   await requireUser(request, env);
 
   const audio = await request.arrayBuffer();
-  const audioInText = await convertAudioToText({ audio });
+  const audioInText = await convertAudioToText({ audio, env });
 
   return json(audioInText);
 }
@@ -19,10 +19,7 @@ export async function convertAudioToTextClient({
 }: {
   audio: ArrayBuffer;
 }) {
-  const url = "http://localhost:8788/resources/audioToText";
-  // const audioContext = new AudioContext();
-  // const audioBuffer = await audioContext.decodeAudioData(audio);
-  // const wavAudio = toWav(audioBuffer);
+  const url = new URL("/resources/audioToText", window.location.href);
 
   const res = await fetch(url, {
     body: audio,

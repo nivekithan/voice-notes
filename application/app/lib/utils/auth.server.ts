@@ -11,7 +11,6 @@ type UserNotLoggedIn = { status: "not-logged-in" };
 type UserStatus = UserLoggedIn | UserNotLoggedIn;
 
 export async function requireUser(request: Request, env: EnvVariables) {
-  return;
   const userStatus = await getUserStatus(request, env);
   const status = userStatus.status;
 
@@ -26,7 +25,6 @@ export async function getUserStatus(
   request: Request,
   env: EnvVariables,
 ): Promise<UserStatus> {
-  return { status: "logged-in", userId: "" };
   const hanko = request.headers.get("cookie");
 
   if (!hanko) {

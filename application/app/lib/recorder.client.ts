@@ -44,4 +44,28 @@ export class AudioRecorder {
 
     return promise;
   }
+
+  pause() {
+    const mediaRecorder = this.mediaRecorder;
+
+    if (!mediaRecorder) {
+      throw new Error(
+        "AudioRecorder.start should be called before calling AudioRecorder.pause",
+      );
+    }
+
+    mediaRecorder.pause();
+  }
+
+  resume() {
+    const mediaRecorder = this.mediaRecorder;
+
+    if (!mediaRecorder) {
+      throw new Error(
+        "AudioRecorder.pause should be called before calling AudioRecorder.resume",
+      );
+    }
+
+    mediaRecorder.resume();
+  }
 }

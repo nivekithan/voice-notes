@@ -1,19 +1,22 @@
 import { z } from "zod";
-
-/**
- * Set speech to text api url in environment variable
- */
-const pageUrl = "http://localhost:8787";
+import { EnvVariables } from "./utils/env.server";
 
 const AudioToTextApiSchema = z.object({
   response: z.string(),
 });
 
-export async function convertAudioToText({ audio }: { audio: ArrayBuffer }) {
-  const res = await fetch(pageUrl, {
+export async function convertAudioToText({
+  audio,
+  env,
+}: {
+  audio: ArrayBuffer;
+  env: EnvVariables;
+}) {
+  const res = await fetch(env.SPEECH_TO_TEXT_API, {
     method: "POST",
     body: audio,
   });
+
   const payload = await res.json();
 
   console.log({ payload });
