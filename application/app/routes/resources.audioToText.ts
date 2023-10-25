@@ -1,4 +1,5 @@
 import { ActionFunctionArgs, json } from "@remix-run/cloudflare";
+import { useFetcher } from "@remix-run/react";
 import { convertAudioToText } from "~/lib/speechToText.server";
 import { requireUser } from "~/lib/utils/auth.server";
 import { EnvVariables } from "~/lib/utils/env.server";
@@ -29,3 +30,5 @@ export async function convertAudioToTextClient({
 
   return payload;
 }
+
+export const useAudioToTextFetcher = useFetcher<typeof action>;

@@ -12,7 +12,7 @@ export default {
 			const arrayBuffer = await request.arrayBuffer();
 			const file = new File([arrayBuffer], 'audio.wav');
 
-			const transcript = await openAi.audio.transcriptions.create({ model: 'whisper-1', file: file });
+			const transcript = await openAi.audio.transcriptions.create({ model: 'whisper-1', file: file, language: 'en' });
 			const response = transcript.text;
 
 			return Response.json({ response });

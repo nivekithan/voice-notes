@@ -1,7 +1,7 @@
 export class AudioRecorder {
   private mediaBlobs: Blob[] = [];
   private stopPromise: Promise<Blob> | null = null;
-  private mediaRecorder: MediaRecorder | null = null;
+  mediaRecorder: MediaRecorder | null = null;
 
   constructor() {}
 

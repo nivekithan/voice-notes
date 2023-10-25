@@ -1,10 +1,12 @@
 import { useRef, useState } from "react";
 import { AudioRecorder } from "~/lib/recorder.client";
+import { LiveAudioVisualizer } from "react-audio-visualize";
 
 export function useAudioRecorder() {
   const [timer, setTimer] = useState(0);
   const [intervalId, setIntervalId] = useState<null | number>(null);
   const audioRecorderRef = useRef<null | AudioRecorder>(null);
+
   const recordingStatus = (() => {
     console.log({ intervalId, audioRecorder: audioRecorderRef.current });
     if (intervalId && audioRecorderRef.current) {
@@ -84,6 +86,19 @@ export function useAudioRecorder() {
     _startTimer();
   }
 
+  function Visualizer() {
+    const audioRecorder = audioRecorderRef.current;
+    const mediaRecorder = audioRecorder?.mediaRecorder;
+
+    return (
+      <div className="h-[30px]">
+        {mediaRecorder ? (
+          <LiveAudioVisualizer mediaRecorder={mediaRecorder} />
+        ) : null}
+      </div>
+    );
+  }
+
   return {
     timer,
     startRecording,
@@ -91,5 +106,6 @@ export function useAudioRecorder() {
     recordingStatus,
     pauseRecording,
     resumeRecording,
+    Visualizer,
   };
 }

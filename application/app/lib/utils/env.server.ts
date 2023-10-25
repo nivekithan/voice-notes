@@ -5,4 +5,8 @@ const EnvSchema = z.object({
   SPEECH_TO_TEXT_API: z.string(),
 });
 
-export type EnvVariables = z.infer<typeof EnvSchema>;
+type CloudflareBindings = {
+  DB: D1Database;
+};
+
+export type EnvVariables = z.infer<typeof EnvSchema> & CloudflareBindings;
