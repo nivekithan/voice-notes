@@ -1,6 +1,7 @@
-import { desc, eq, sql } from "drizzle-orm";
+import { and, desc, eq, sql } from "drizzle-orm";
 import { DrizzleD1Database } from "drizzle-orm/d1";
 import { sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { ModelError } from "./error";
 
 export type NoteStatus = "CREATED" | "PROCESSING" | "DONE" | "ERROR";
 
@@ -51,4 +52,21 @@ export async function getAllNotes({ userId, db }: WithDb<{ userId: string }>) {
     .orderBy(desc(Notes.createdAt));
 
   return notes;
+}
+
+export async function getNotes({
+  db,
+  noteId,
+  userId,
+}: WithDb<{ noteId: string; userId: string }>) {
+  const notes = await db
+    .select()
+    .from(Notes)
+    .where(and(eq(Notes.id, noteId), eq(Notes.userId, userId)));
+
+  if (notes.length !== 1) {
+    return null;
+  }
+
+  return notes[0];
 }
