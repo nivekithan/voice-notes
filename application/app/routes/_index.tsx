@@ -80,16 +80,20 @@ export async function action({ request, context }: ActionFunctionArgs) {
   const db = drizzle(env.DB);
   const audio = await file.arrayBuffer();
 
-  const text = await convertAudioToText({ audio, env });
+  const { content, title, transcript } = await convertAudioToText({
+    audio,
+    env,
+  });
 
   const notes = await createNewNotes({
     db,
-    transcript: text,
-    content: text,
-    title: "WIP",
+    content,
+    title,
+    transcript,
     status: "DONE",
     userId,
   });
+
   console.log(notes);
 
   return json(notes);
@@ -175,13 +179,15 @@ export default function Index() {
   return (
     <main className="flex flex-col gap-y-10">
       <h1 className="text-center text-4xl font-bold">Notes</h1>
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-4 gap-4 auto-rows-max">
         {notes.map((note) => {
           return (
             <Link to={`/notes/${note.id}`} key={note.id}>
-              <Card className="hover:border-primary h-[150px]">
+              <Card className="hover:border-primary min-h-[150px]">
                 <CardHeader>
-                  <CardTitle>{note.title}</CardTitle>
+                  <CardTitle className="leading-8 line-clamp-2">
+                    {note.title}
+                  </CardTitle>
                   <CardDescription className="line-clamp-3 leading-6">
                     {note.content}
                   </CardDescription>

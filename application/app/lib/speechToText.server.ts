@@ -2,7 +2,9 @@ import { z } from "zod";
 import { EnvVariables } from "./utils/env.server";
 
 const AudioToTextApiSchema = z.object({
-  response: z.string(),
+  transcript: z.string(),
+  title: z.string(),
+  content: z.string(),
 });
 
 export async function convertAudioToText({
@@ -21,7 +23,5 @@ export async function convertAudioToText({
 
   console.log({ payload });
 
-  const { response } = AudioToTextApiSchema.parse(payload);
-
-  return response;
+  return AudioToTextApiSchema.parse(payload);
 }
