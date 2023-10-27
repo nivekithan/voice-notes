@@ -1,5 +1,4 @@
 import { OpenAI } from 'openai';
-import { prompt } from './prompt';
 
 export interface Env {
 	OPENAI_API_KEY: string;
@@ -9,20 +8,29 @@ export default {
 	async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
 		try {
 			const openAi = new OpenAI({ apiKey: env.OPENAI_API_KEY });
+			const formData = await request.formData();
 
-			const arrayBuffer = await request.arrayBuffer();
-			const file = new File([arrayBuffer], 'audio.wav');
+			const audio = formData.get('audio');
+			const systemMessage = formData.get('systemMessage');
+
+			if (!(audio instanceof File)) {
+				return Response.json({ message: 'Expected audio to be file' }, { status: 400 });
+			}
+
+			if (typeof systemMessage !== 'string') {
+				return Response.json({ message: 'Expected system message to be string' }, { status: 400 });
+			}
 
 			const transcript = await openAi.audio.transcriptions.create({
 				model: 'whisper-1',
-				file: file,
+				file: audio,
 				language: 'en',
 			});
 
 			const processedText = await openAi.chat.completions.create({
 				model: 'gpt-4',
 				messages: [
-					{ role: 'system', content: prompt.transcribe.systemMessage },
+					{ role: 'system', content: systemMessage },
 					{ role: 'user', content: transcript.text },
 				],
 			});

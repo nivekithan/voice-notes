@@ -1,7 +1,6 @@
 import { and, desc, eq, sql } from "drizzle-orm";
 import { DrizzleD1Database } from "drizzle-orm/d1";
 import { sqliteTable, text } from "drizzle-orm/sqlite-core";
-import { ModelError } from "./error";
 
 export type NoteStatus = "CREATED" | "PROCESSING" | "DONE" | "ERROR";
 
@@ -69,4 +68,17 @@ export async function getNotes({
   }
 
   return notes[0];
+}
+
+export async function updateTitleAndContent({
+  content,
+  db,
+  noteId,
+  title,
+  userId,
+}: WithDb<{ userId: string; title: string; content: string; noteId: string }>) {
+  await db
+    .update(Notes)
+    .set({ title, content })
+    .where(and(eq(Notes.id, noteId), eq(Notes.userId, userId)));
 }

@@ -12,6 +12,7 @@
 		"wrangler": "^3.0.0"
 	},
 	"dependencies": {
+		"drizzle-orm": "^0.28.6",
 		"openai": "^4.12.4"
 	}
 }

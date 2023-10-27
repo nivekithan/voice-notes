@@ -31,6 +31,7 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
+import { findPrompt, getWhitelistedPrompts } from "~/lib/prompt";
 
 export const meta: MetaFunction = () => {
   return [
@@ -48,21 +49,9 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 
   const db = drizzle(env.DB);
   const allNotes = await getAllNotes({ db, userId });
+  const prompts = getWhitelistedPrompts();
 
-  const promptStyles = [
-    {
-      id: "1",
-      name: "Flashcard",
-      description: "Converts your audio into question answer pairs",
-    },
-    {
-      id: "2",
-      name: "Transcribe",
-      description: "Cleans your audio and transcribes it cleanly",
-    },
-  ];
-
-  return json({ promptStyles, notes: allNotes });
+  return json({ prompts: prompts, notes: allNotes });
 }
 
 export async function action({ request, context }: ActionFunctionArgs) {
@@ -71,18 +60,29 @@ export async function action({ request, context }: ActionFunctionArgs) {
 
   const formData = await request.formData();
 
-  const file = formData.get("audio");
+  const audio = formData.get("audio");
+  const promptId = formData.get("promptId");
 
-  if (!(file instanceof File)) {
+  if (!(audio instanceof File)) {
     throw new Response("Expected audio to be file", { status: 400 });
   }
 
+  if (!promptId || typeof promptId !== "string") {
+    throw new Response("Expected promptId to be string", { status: 400 });
+  }
+
+  const prompt = findPrompt(promptId);
+
+  if (!prompt) {
+    throw new Response("invalid promptId");
+  }
+
   const db = drizzle(env.DB);
-  const audio = await file.arrayBuffer();
 
   const { content, title, transcript } = await convertAudioToText({
     audio,
     env,
+    systemMessage: prompt.systemMessage,
   });
 
   const notes = await createNewNotes({
@@ -102,7 +102,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
 type FlowState = "RECORDING" | "STYLES";
 
 export default function Index() {
-  const { promptStyles, notes } = useLoaderData<typeof loader>();
+  const { prompts, notes } = useLoaderData<typeof loader>();
   const {
     pauseRecording,
     recordingStatus,
@@ -116,7 +116,7 @@ export default function Index() {
   const fetcher = useFetcher<typeof action>();
 
   const [flowState, setFlowState] = useState<FlowState>("RECORDING");
-  const [promtStyleId, setPromptStyleId] = useState<string>(promptStyles[0].id);
+  const [promtStyleId, setPromptStyleId] = useState<string>(prompts[0].id);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const isRecording = recordingStatus === "RECORDING";
@@ -146,7 +146,7 @@ export default function Index() {
     }
 
     setFlowState("RECORDING");
-    setPromptStyleId(promptStyles[0].id);
+    setPromptStyleId(prompts[0].id);
   }
 
   function onChooseStyles() {
@@ -157,9 +157,12 @@ export default function Index() {
     // Show loading indicator
     console.log("Running onCreateNewNote");
     const promptId = promtStyleId;
-    const audioFile = await stopRecording();
+    const audioBlob = await stopRecording();
 
     const formData = new FormData();
+    const audioFile = new File([audioBlob], "audio.webm", {
+      type: "audio/webm",
+    });
 
     formData.set("promptId", promptId);
     formData.set("audio", audioFile);
@@ -236,7 +239,7 @@ export default function Index() {
               </div>
             ) : (
               <div className="flex flex-col gap-y-4">
-                {promptStyles.map((value) => (
+                {prompts.map((value) => (
                   <button
                     type="button"
                     className={`flex flex-col space-y-1.5 text-center sm:text-left border p-4 rounded-sm ${

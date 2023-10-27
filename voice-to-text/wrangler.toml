@@ -49,3 +49,7 @@ compatibility_date = "2023-10-16"
 # [[migrations]]
 # tag = "v1"
 # new_classes = ["MyDurableObject"]
+[[d1_databases]]
+binding = "DB"
+database_name = "voice-notes-dev"
+database_id = "0926c8a1-cca7-444b-b2be-209b07ae2a04"

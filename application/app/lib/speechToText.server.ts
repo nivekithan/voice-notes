@@ -10,13 +10,20 @@ const AudioToTextApiSchema = z.object({
 export async function convertAudioToText({
   audio,
   env,
+  systemMessage,
 }: {
-  audio: ArrayBuffer;
+  audio: File;
+  systemMessage: string;
   env: EnvVariables;
 }) {
+  const formData = new FormData();
+
+  formData.set("audio", audio);
+  formData.set("systemMessage", systemMessage);
+
   const res = await fetch(env.SPEECH_TO_TEXT_API, {
     method: "POST",
-    body: audio,
+    body: formData,
   });
 
   const payload = await res.json();

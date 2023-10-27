@@ -5,6 +5,12 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  '@conform-to/react':
+    specifier: ^0.9.0
+    version: 0.9.0(react@18.2.0)
+  '@conform-to/zod':
+    specifier: ^0.9.0
+    version: 0.9.0(@conform-to/dom@0.9.0)(zod@3.22.4)
   '@radix-ui/react-dialog':
     specifier: ^1.0.5
     version: 1.0.5(@types/react-dom@18.2.14)(@types/react@18.2.31)(react-dom@18.2.0)(react@18.2.0)
@@ -597,6 +603,29 @@ packages:
 
   /@cloudflare/workers-types@4.20231016.0:
     resolution: {integrity: sha512-eGB0cRVyoJpeyGJx2re5sbd9R316a61sY73xwnqm4cwGpb+OxCK2gc651RxGiN7H4w6LY1RpysUgeGLmj5B3+g==}
+
+  /@conform-to/dom@0.9.0:
+    resolution: {integrity: sha512-kaYP7jKeWWnBY+M0+Rttj5atWm9Tt9Uyts49lU4hoz9p/X8v5GuGas6YOilovyE5/vJUsnuYzN97upxIvlYg4g==}
+    dev: false
+
+  /@conform-to/react@0.9.0(react@18.2.0):
+    resolution: {integrity: sha512-ZxfzK+L4b3Z9SPGCyo8GqLjfSFDp4upiwpjJHxDLPwMDVsF8EvkifSHyzUkjaiIny407qN9zbdtoItQCTaaZeg==}
+    peerDependencies:
+      react: '>=16.8'
+    dependencies:
+      '@conform-to/dom': 0.9.0
+      react: 18.2.0
+    dev: false
+
+  /@conform-to/zod@0.9.0(@conform-to/dom@0.9.0)(zod@3.22.4):
+    resolution: {integrity: sha512-Eq19/U6inDlCB1GNrvfTJBxyRVFesHVgkB5piWqLmhRYFHL8ooQGvmhVaOqeqqm+e+zNCjsIe3jip5ZW7uiBIw==}
+    peerDependencies:
+      '@conform-to/dom': 0.9.0
+      zod: ^3.21.0
+    dependencies:
+      '@conform-to/dom': 0.9.0
+      zod: 3.22.4
+    dev: false
 
   /@denysvuika/preact-translate@0.5.0(preact@10.18.1):
     resolution: {integrity: sha512-hcWbmA5+05JRYGPhl64kDiJ+rWLOKe4tDi0y7cXVKe+hwu6H0KphyAwLvVbCSTTtnfXvAijnEZMOf/kCsdPFrQ==}
