@@ -33,6 +33,7 @@
     "react-audio-visualize": "^1.1.3",
     "react-dom": "^18.2.0",
     "react-spinners": "^0.13.8",
+    "react-textarea-autosize": "^8.5.3",
     "tailwind-merge": "^1.14.0",
     "tailwindcss-animate": "^1.0.7",
     "zod": "^3.22.4"
