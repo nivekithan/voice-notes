@@ -22,6 +22,8 @@ export default {
 				return Response.json({ message: 'Expected system message to be string' }, { status: 400 });
 			}
 
+			console.log({ systemMessage });
+
 			const isCreatingNewNote = typeof currentText !== 'string';
 
 			if (isCreatingNewNote) {

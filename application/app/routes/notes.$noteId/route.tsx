@@ -31,6 +31,7 @@ import { findPrompt } from "~/lib/prompt";
 import { updateTextWithAudio } from "~/lib/speechToText.server";
 import { useEffect, useState } from "react";
 import { ClipLoader } from "react-spinners";
+import { getSpellingMistake } from "~/models/spellingMistake";
 
 const RouteParamSchema = z.object({ noteId: z.string() });
 
@@ -56,6 +57,10 @@ export async function loader({ request, params, context }: LoaderFunctionArgs) {
 
   const { noteId } = RouteParamSchema.parse(params);
   const note = await getNotes({ db, noteId, userId });
+
+  if (note === null) {
+    throw new Response("Not found", { status: 404 });
+  }
   const completedNote = CompleteNoteScehma.parse(note);
 
   return json({ note: completedNote });
@@ -97,7 +102,10 @@ export async function action({ request, context, params }: ActionFunctionArgs) {
     await updateTitleAndContent({ content, db, noteId, title, userId });
   } else if (parsedFormData.type === "updateNoteUsingAudio") {
     const { audio } = parsedFormData;
-    const note = await getNotes({ db, noteId, userId });
+    const [note, spellingMistake] = await Promise.all([
+      getNotes({ db, noteId, userId }),
+      getSpellingMistake({ db, userId }),
+    ]);
 
     if (!note) {
       throw new Response("Invalid noteId", { status: 400 });
@@ -125,6 +133,7 @@ export async function action({ request, context, params }: ActionFunctionArgs) {
       currentText,
       env,
       systemMessage: updatedSystemMessage,
+      spellingMistake: spellingMistake?.spellingMistake || "",
     });
 
     await updateContent({ content, db, noteId, userId });

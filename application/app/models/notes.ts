@@ -1,6 +1,7 @@
 import { and, desc, eq, sql } from "drizzle-orm";
 import { DrizzleD1Database } from "drizzle-orm/d1";
 import { sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { WithDb } from "./utils";
 
 export type NoteStatus = "CREATED" | "PROCESSING" | "DONE" | "ERROR";
 
@@ -21,7 +22,6 @@ export const Notes = sqliteTable("notes", {
 });
 
 type CreateNotes = typeof Notes.$inferInsert;
-type WithDb<T> = T & { db: DrizzleD1Database };
 
 export async function createNewNotes({
   db,

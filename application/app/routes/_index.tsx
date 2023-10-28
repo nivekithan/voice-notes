@@ -18,7 +18,6 @@ import {
   DialogTrigger,
 } from "~/components/ui/dialog";
 import { useAudioRecorder } from "~/hooks/useAudioRecorder";
-import { Mic, MicOff } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useFetcher, useLoaderData } from "@remix-run/react";
 import { convertAudioToText } from "~/lib/speechToText.server";
@@ -33,6 +32,8 @@ import {
 } from "~/components/ui/card";
 import { findPrompt, getWhitelistedPrompts } from "~/lib/prompt";
 import { Recorder } from "~/components/recorder";
+import { Settings } from "lucide-react";
+import { getSpellingMistake } from "~/models/spellingMistake";
 
 export const meta: MetaFunction = () => {
   return [
@@ -79,11 +80,13 @@ export async function action({ request, context }: ActionFunctionArgs) {
   }
 
   const db = drizzle(env.DB);
+  const spellingMistake = await getSpellingMistake({ db, userId });
 
   const { content, title, transcript } = await convertAudioToText({
     audio,
     env,
     systemMessage: prompt.systemMessage,
+    spellingMistake: spellingMistake?.spellingMistake || "",
   });
 
   const notes = await createNewNotes({
@@ -95,8 +98,6 @@ export async function action({ request, context }: ActionFunctionArgs) {
     userId,
     promptId,
   });
-
-  console.log(notes);
 
   return json(notes);
 }
@@ -182,8 +183,15 @@ export default function Index() {
   }, [fetcher.state]);
 
   return (
-    <main className="flex flex-col gap-y-10">
-      <h1 className="text-center text-4xl font-bold">Notes</h1>
+    <main className="flex flex-col gap-y-10 p-4">
+      <div className="flex items-center justify-center gap-x-2">
+        <h1 className="text-4xl font-bold">Notes</h1>
+        <Link to="/setting" className="w-10 h-10 relative top-1">
+          <Button variant="ghost" size="icon" className="w-10 h-10">
+            <Settings width={22} height={22} />
+          </Button>
+        </Link>
+      </div>
       <div className="grid grid-cols-4 gap-4 auto-rows-max">
         {notes.map((note) => {
           return (
