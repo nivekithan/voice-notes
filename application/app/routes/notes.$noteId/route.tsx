@@ -11,10 +11,26 @@ import { z } from "zod";
 import { Separator } from "~/components/ui/separator";
 import { requireUser } from "~/lib/utils/auth.server";
 import { EnvVariables } from "~/lib/utils/env.server";
-import { getNotes, updateTitleAndContent } from "~/models/notes";
+import { getNotes, updateContent, updateTitleAndContent } from "~/models/notes";
 import { DebouncedAutosizeTextArea, DebouncedInput } from "./debouncedInput";
 import { conform, useForm } from "@conform-to/react";
 import { parse } from "@conform-to/zod";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "~/components/ui/dialog";
+import { Button } from "~/components/ui/button";
+import { Recorder } from "~/components/recorder";
+import { useAudioRecorder } from "~/hooks/useAudioRecorder";
+import { findPrompt } from "~/lib/prompt";
+import { updateTextWithAudio } from "~/lib/speechToText.server";
+import { useEffect, useState } from "react";
+import { ClipLoader } from "react-spinners";
 
 const RouteParamSchema = z.object({ noteId: z.string() });
 
@@ -45,7 +61,16 @@ export async function loader({ request, params, context }: LoaderFunctionArgs) {
   return json({ note: completedNote });
 }
 
-const SaveNoteSchema = z.object({ title: z.string(), content: z.string() });
+const UpdateNoteSchema = z.object({
+  title: z.string(),
+  content: z.string(),
+  type: z.literal("updateNote"),
+});
+
+const UpdateNoteUsingAudioSchema = z.object({
+  audio: z.instanceof(File, { message: "audio is required" }),
+  type: z.literal("updateNoteUsingAudio"),
+});
 
 export async function action({ request, context, params }: ActionFunctionArgs) {
   const env = context.env as EnvVariables;
@@ -54,14 +79,58 @@ export async function action({ request, context, params }: ActionFunctionArgs) {
   const { noteId } = RouteParamSchema.parse(params);
 
   const formData = await request.formData();
-  const submission = parse(formData, { schema: SaveNoteSchema });
+  const submission = parse(formData, {
+    schema: z.discriminatedUnion("type", [
+      UpdateNoteSchema,
+      UpdateNoteUsingAudioSchema,
+    ]),
+  });
 
   if (!submission.value || submission.intent !== "submit") {
-    return json({ submission });
+    return json({ submission }, { status: 400 });
   }
 
-  const { content, title } = submission.value;
-  await updateTitleAndContent({ content, db, noteId, title, userId });
+  const parsedFormData = submission.value;
+
+  if (parsedFormData.type === "updateNote") {
+    const { content, title } = parsedFormData;
+    await updateTitleAndContent({ content, db, noteId, title, userId });
+  } else if (parsedFormData.type === "updateNoteUsingAudio") {
+    const { audio } = parsedFormData;
+    const note = await getNotes({ db, noteId, userId });
+
+    if (!note) {
+      throw new Response("Invalid noteId", { status: 400 });
+    }
+
+    const currentText = note.content;
+
+    if (!currentText) {
+      throw new Response("Note is not completly processed yet", {
+        status: 400,
+      });
+    }
+
+    const promptId = note.promptId;
+    const prompt = findPrompt(promptId);
+
+    if (!prompt) {
+      throw new Response("Invalid prompt Id", { status: 400 });
+    }
+
+    const updatedSystemMessage = prompt.updateSystemMessage;
+
+    const { content } = await updateTextWithAudio({
+      audio,
+      currentText,
+      env,
+      systemMessage: updatedSystemMessage,
+    });
+
+    await updateContent({ content, db, noteId, userId });
+  } else {
+    throw new Error("Unpected type");
+  }
 
   return json({ submission });
 }
@@ -69,21 +138,87 @@ export async function action({ request, context, params }: ActionFunctionArgs) {
 export default function Component() {
   const { note } = useLoaderData<typeof loader>();
   const actionData = useActionData<typeof action>();
-  const fetcher = useFetcher();
-  const [form, { content, title }] = useForm({
+
+  const autoSaveFetcher = useFetcher<typeof action>();
+  const updateNoteUsingAudioFetcher = useFetcher<typeof action>();
+
+  const isAudioSubmitting =
+    updateNoteUsingAudioFetcher.state === "submitting" ||
+    updateNoteUsingAudioFetcher.state === "loading";
+
+  const [isRecorderDialogOpen, setIsRecorderDialogOpen] = useState(false);
+
+  const [updateNoteForm, { content, title, type }] = useForm({
     lastSubmission: actionData?.submission,
     onValidate({ formData }) {
-      return parse(formData, { schema: SaveNoteSchema });
+      return parse(formData, { schema: UpdateNoteSchema });
     },
   });
 
+  const {
+    pauseRecording,
+    recordingStatus,
+    resumeRecording,
+    startRecording,
+    stopRecording,
+    timer,
+    Visualizer,
+  } = useAudioRecorder();
+
+  const isRecording = recordingStatus === "RECORDING";
+
+  async function onMicClick() {
+    if (recordingStatus === "STOPPED") {
+      await startRecording();
+    } else if (recordingStatus === "RECORDING") {
+      await pauseRecording();
+    } else if (recordingStatus === "PAUSED") {
+      await resumeRecording();
+    }
+  }
+
+  function onRecorderDialogOpenChange(newState: boolean) {
+    if (isRecording || isAudioSubmitting) {
+      setIsRecorderDialogOpen(true);
+      return;
+    }
+
+    setIsRecorderDialogOpen(newState);
+  }
+
+  useEffect(() => {
+    if (updateNoteUsingAudioFetcher.state === "idle") {
+      setIsRecorderDialogOpen(false);
+    }
+  }, [updateNoteUsingAudioFetcher.state]);
+
+  async function onAddToNote() {
+    const blob = await stopRecording();
+    const audioFile = new File([blob], "audio.webm", { type: "audio/webm" });
+    const formData = new FormData();
+
+    formData.set("audio", audioFile);
+    formData.set("type", "updateNoteUsingAudio");
+
+    updateNoteUsingAudioFetcher.submit(formData, {
+      method: "post",
+      encType: "multipart/form-data",
+    });
+  }
+
   return (
     <main>
-      <fetcher.Form
+      <autoSaveFetcher.Form
         className="p-10 flex flex-col gap-y-4"
         method="POST"
-        {...form}
+        {...updateNoteForm}
       >
+        <input
+          hidden
+          {...conform.hiddenProps}
+          {...conform.input(type)}
+          value="updateNote"
+        />
         <DebouncedInput
           {...conform.input(title)}
           className="w-full bg-transparent text-muted-foreground outline-none text-2xl tracking-tight font-semibold leading-none"
@@ -94,8 +229,43 @@ export default function Component() {
           {...{ ...conform.textarea(content), style: undefined }}
           defaultValue={note.content}
           className="w-full bg-transparent outline-none leading-8 text-md text-primary resize-none self-stretch"
+          key={isAudioSubmitting ? "1" : "2"}
         />
-      </fetcher.Form>
+      </autoSaveFetcher.Form>
+      <Dialog
+        open={isRecorderDialogOpen}
+        onOpenChange={onRecorderDialogOpenChange}
+      >
+        <DialogTrigger asChild>
+          <Button>Add to note</Button>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add to note</DialogTitle>
+            <DialogDescription>
+              New note will be added or existing note will be modified
+            </DialogDescription>
+          </DialogHeader>
+          <Recorder
+            isRecording={isRecording}
+            Visualizer={Visualizer}
+            timer={timer}
+            onMicClick={onMicClick}
+          />
+          <DialogFooter>
+            <Button
+              type="button"
+              onClick={onAddToNote}
+              className="flex gap-x-2"
+            >
+              <span>Add to note</span>
+              {isAudioSubmitting ? (
+                <ClipLoader size="16" color="hsl(222.2,84%,4.9%)" />
+              ) : null}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </main>
   );
 }

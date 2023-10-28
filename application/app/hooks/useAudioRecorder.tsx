@@ -21,7 +21,6 @@ export function useAudioRecorder() {
   function _stopTimer() {
     clearInterval(intervalId);
     setIntervalId(null);
-    setTimer(0);
   }
 
   function _pauseTimer() {
@@ -30,8 +29,9 @@ export function useAudioRecorder() {
   }
 
   function _startTimer() {
+    setTimer(0);
     const intervalId = setInterval(() => setTimer((i) => i + 1), 1_000);
-    setIntervalId(intervalId);
+    setIntervalId(intervalId as unknown as number);
   }
 
   async function startRecording() {
@@ -58,8 +58,6 @@ export function useAudioRecorder() {
 
     if (intervalId) {
       _stopTimer();
-    } else {
-      setTimer(0);
     }
     return audioBlob;
   }

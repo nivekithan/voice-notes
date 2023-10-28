@@ -14,6 +14,7 @@ export const Notes = sqliteTable("notes", {
   transcript: text("transcript"),
   status: text("status").$type<NoteStatus>().notNull().default("CREATED"),
   userId: text("userId").notNull(),
+  promptId: text("promptId").notNull(),
   createdAt: text("createdAt")
     .$defaultFn(() => new Date().toISOString())
     .notNull(),
@@ -30,10 +31,11 @@ export async function createNewNotes({
   title,
   transcript,
   userId,
+  promptId,
 }: WithDb<CreateNotes>) {
   const notes = await db
     .insert(Notes)
-    .values({ id, content, status, title, transcript, userId })
+    .values({ id, content, status, title, transcript, userId, promptId })
     .returning();
 
   if (notes.length !== 1) {
@@ -81,4 +83,20 @@ export async function updateTitleAndContent({
     .update(Notes)
     .set({ title, content })
     .where(and(eq(Notes.id, noteId), eq(Notes.userId, userId)));
+}
+
+export async function updateContent({
+  content,
+  db,
+  noteId,
+  userId,
+}: WithDb<{
+  userId: string;
+  content: string;
+  noteId: string;
+}>) {
+  await db
+    .update(Notes)
+    .set({ content })
+    .where(and(eq(Notes.userId, userId), eq(Notes.id, noteId)));
 }
