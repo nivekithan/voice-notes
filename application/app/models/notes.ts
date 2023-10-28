@@ -1,5 +1,4 @@
 import { and, desc, eq, sql } from "drizzle-orm";
-import { DrizzleD1Database } from "drizzle-orm/d1";
 import { sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { WithDb } from "./utils";
 
