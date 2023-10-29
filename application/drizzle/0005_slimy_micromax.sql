@@ -1,0 +1,1 @@
+ALTER TABLE custom_prompt ADD `created_at` text NOT NULL;

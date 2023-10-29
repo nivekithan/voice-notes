@@ -1,6 +1,6 @@
 import { sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { WithDb } from "./utils";
-import { eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 
 export const CustomPromptModel = sqliteTable("custom_prompt", {
   id: text("id")
@@ -12,6 +12,9 @@ export const CustomPromptModel = sqliteTable("custom_prompt", {
   description: text("description").notNull(),
   systemMessage: text("system_message").notNull(),
   updateSystemMessage: text("update_system_messsage").notNull(),
+  createdAt: text("created_at")
+    .notNull()
+    .$defaultFn(() => new Date().toISOString()),
 });
 
 export type CustomPrompt = typeof CustomPromptModel.$inferSelect;
@@ -23,7 +26,8 @@ export async function getAllCustomPrompts({
   const allCustomPrompt = await db
     .select()
     .from(CustomPromptModel)
-    .where(eq(CustomPromptModel.userId, userId));
+    .where(eq(CustomPromptModel.userId, userId))
+    .orderBy(desc(CustomPromptModel.createdAt));
 
   return allCustomPrompt;
 }

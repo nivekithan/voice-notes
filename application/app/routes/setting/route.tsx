@@ -20,6 +20,8 @@ import {
 import { AddCustomPrompt, AddCustomPromptSchema } from "./addCustomPrompt";
 import { createCustomPrompt, getAllCustomPrompts } from "~/models/customPrompt";
 import { CustomPrompt } from "./customPrompt";
+import { Button } from "~/components/ui/button";
+import { useState } from "react";
 
 export type SettingLoaderType = typeof loader;
 
@@ -78,24 +80,29 @@ export async function action({ context, request }: ActionFunctionArgs) {
 
 export default function Component() {
   const { allCustomPrompts } = useLoaderData<typeof loader>();
+
   return (
     <main className="flex flex-col p-4 gap-y-10 items-center">
       <h1 className="text-4xl tracking-none font-bold">Settings</h1>
       <SpellingMistakeForm />
       <div className="w-[644px] flex flex-col gap-y-8">
-        <h3 className="text-xl font-bold tracking-none">Custom Prompts</h3>
-        <div>
+        <div className="flex justify-between items-center">
+          <h3 className="text-xl font-bold tracking-none">Custom Prompts</h3>
+          <AddCustomPrompt />
+        </div>
+        <div className="flex flex-col gap-y-4">
           {allCustomPrompts.map((prompt) => {
             return (
               <CustomPrompt
                 key={prompt.id}
                 description={prompt.description}
                 name={prompt.name}
+                systemMessage={prompt.systemMessage}
+                updateSystemMessage={prompt.updateSystemMessage}
               />
             );
           })}
         </div>
-        <AddCustomPrompt />
       </div>
     </main>
   );
