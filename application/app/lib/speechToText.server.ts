@@ -20,7 +20,7 @@ export async function convertAudioToText({
 }) {
   const formData = new FormData();
 
-  const newSystemMessage = `${systemMessage}\n While correcting spelling mistake makes sure all these words are spelled correct: ${spellingMistake}`;
+  const newSystemMessage = `${systemMessage}\n While correcting spelling mistake makes sure all these words are spelled correct. Only mention these words if they are mentioned in the text. Otherwise do no mention these words: ${spellingMistake}\n `;
 
   formData.set("audio", audio);
   formData.set("systemMessage", newSystemMessage);

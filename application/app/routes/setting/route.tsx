@@ -29,6 +29,7 @@ import {
   updateCustomPrompt,
 } from "~/models/customPrompt";
 import { CustomPrompt, DeleteCustomPromptSchema } from "./customPrompt";
+import { addInstructionAboutTitle } from "~/lib/prompt";
 
 export type SettingLoaderType = typeof loader;
 

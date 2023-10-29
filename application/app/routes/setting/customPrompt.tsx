@@ -77,11 +77,11 @@ export function CustomPrompt({
       </CardHeader>
       <CardContent className="flex flex-col gap-y-3">
         <div>
-          <h3>System Message</h3>
+          <h3 className="font-semibold">System Message</h3>
           <p className="text-muted-foreground line-clamp-2">{systemMessage}</p>
         </div>
         <div>
-          <h3>System message while updating note</h3>
+          <h3 className="font-semibold">System message while updating note</h3>
           <p className="text-muted-foreground line-clamp-2">
             {updateSystemMessage}
           </p>

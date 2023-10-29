@@ -19,6 +19,28 @@ export const CustomPromptModel = sqliteTable("custom_prompt", {
 
 export type CustomPrompt = typeof CustomPromptModel.$inferSelect;
 
+export async function getCustomPrompt({
+  db,
+  promptId,
+  userId,
+}: WithDb<{ userId: string; promptId: string }>) {
+  const prompt = await db
+    .select()
+    .from(CustomPromptModel)
+    .where(
+      and(
+        eq(CustomPromptModel.id, promptId),
+        eq(CustomPromptModel.userId, userId),
+      ),
+    );
+
+  if (prompt.length === 0) {
+    return null;
+  }
+
+  return prompt[0];
+}
+
 export async function getAllCustomPrompts({
   db,
   userId,

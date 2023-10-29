@@ -30,7 +30,11 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
-import { findPrompt, getWhitelistedPrompts } from "~/lib/prompt";
+import {
+  addInstructionAboutTitle,
+  findPrompt,
+  getWhitelistedPrompts,
+} from "~/lib/prompt";
 import { Recorder } from "~/components/recorder";
 import { Settings } from "lucide-react";
 import { getSpellingMistake } from "~/models/spellingMistake";
@@ -50,8 +54,11 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
   const userId = await requireUser(request, env);
 
   const db = drizzle(env.DB);
-  const allNotes = await getAllNotes({ db, userId });
-  const prompts = getWhitelistedPrompts();
+
+  const [allNotes, prompts] = await Promise.all([
+    getAllNotes({ db, userId }),
+    getWhitelistedPrompts({ db, userId }),
+  ]);
 
   return json({ prompts: prompts, notes: allNotes });
 }
@@ -59,6 +66,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 export async function action({ request, context }: ActionFunctionArgs) {
   const env = context.env as EnvVariables;
   const userId = await requireUser(request, env);
+  const db = drizzle(env.DB);
 
   const formData = await request.formData();
 
@@ -73,19 +81,23 @@ export async function action({ request, context }: ActionFunctionArgs) {
     throw new Response("Expected promptId to be string", { status: 400 });
   }
 
-  const prompt = findPrompt(promptId);
+  const prompt = await findPrompt({ db, promptId, userId });
 
   if (!prompt) {
     throw new Response("invalid promptId");
   }
 
-  const db = drizzle(env.DB);
   const spellingMistake = await getSpellingMistake({ db, userId });
+
+  const systemMessage =
+    prompt.type === "included"
+      ? prompt.systemMessage
+      : addInstructionAboutTitle(prompt.systemMessage);
 
   const { content, title, transcript } = await convertAudioToText({
     audio,
     env,
-    systemMessage: prompt.systemMessage,
+    systemMessage: systemMessage,
     spellingMistake: spellingMistake?.spellingMistake || "",
   });
 

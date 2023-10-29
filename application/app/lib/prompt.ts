@@ -1,3 +1,6 @@
+import { getAllCustomPrompts, getCustomPrompt } from "~/models/customPrompt";
+import { WithDb } from "~/models/utils";
+
 type Prompt = {
   id: string;
   systemMessage: string;
@@ -68,18 +71,56 @@ export const prompts: Prompt[] = [
   },
 ];
 
-export function getWhitelistedPrompts() {
-  return prompts.map((prompt) => {
-    return {
+export async function getWhitelistedPrompts({
+  db,
+  userId,
+}: WithDb<{ userId: string }>) {
+  const whitelistedPrompts: {
+    id: string;
+    description: string;
+    name: string;
+  }[] = [];
+
+  prompts.forEach((prompt) => {
+    whitelistedPrompts.push({
       id: prompt.id,
       description: prompt.description,
       name: prompt.name,
-    };
+    });
   });
+  const allCustomPrompts = await getAllCustomPrompts({ db, userId });
+
+  allCustomPrompts.forEach((prompt) => {
+    whitelistedPrompts.push({
+      description: prompt.description,
+      id: prompt.id,
+      name: prompt.name,
+    });
+  });
+
+  return whitelistedPrompts;
 }
 
-export function findPrompt(id: string) {
-  const prompt = prompts.find((prompt) => prompt.id === id);
+export async function findPrompt({
+  db,
+  promptId,
+  userId,
+}: WithDb<{ userId: string; promptId: string }>) {
+  const prompt = prompts.find((prompt) => prompt.id === promptId);
 
-  return prompt;
+  if (prompt) {
+    return { ...prompt, type: "included" } as const;
+  }
+
+  const customPrompt = await getCustomPrompt({ db, promptId, userId });
+
+  if (customPrompt === null) {
+    return null;
+  }
+
+  return { ...customPrompt, type: "custom" } as const;
+}
+
+export function addInstructionAboutTitle(currentSystemMessage: string) {
+  return `${currentSystemMessage}\n The first line of the response should be the title of the response. Only from the next line the actual response should start. Title should be just be plain text without any markdown markings like ", #.`;
 }
