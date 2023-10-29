@@ -17,11 +17,18 @@ import {
   SpellingMistakeForm,
   UpdateSpellingMistakeSchema,
 } from "./SpellingMistake";
-import { AddCustomPrompt, AddCustomPromptSchema } from "./addCustomPrompt";
-import { createCustomPrompt, getAllCustomPrompts } from "~/models/customPrompt";
-import { CustomPrompt } from "./customPrompt";
-import { Button } from "~/components/ui/button";
-import { useState } from "react";
+import {
+  AddCustomPrompt,
+  AddCustomPromptSchema,
+  UpdateCustomPromptSchema,
+} from "./addCustomPrompt";
+import {
+  createCustomPrompt,
+  deleteCustomPrompt,
+  getAllCustomPrompts,
+  updateCustomPrompt,
+} from "~/models/customPrompt";
+import { CustomPrompt, DeleteCustomPromptSchema } from "./customPrompt";
 
 export type SettingLoaderType = typeof loader;
 
@@ -50,6 +57,8 @@ export async function action({ context, request }: ActionFunctionArgs) {
     schema: z.discriminatedUnion("type", [
       UpdateSpellingMistakeSchema,
       AddCustomPromptSchema,
+      DeleteCustomPromptSchema,
+      UpdateCustomPromptSchema,
     ]),
   });
 
@@ -70,6 +79,24 @@ export async function action({ context, request }: ActionFunctionArgs) {
       db,
       description,
       name,
+      systemMessage,
+      updateSystemMessage,
+      userId,
+    });
+    return json({ submission });
+  } else if (submitedData.type === "deleteCustomPrompt") {
+    const { customPromptId } = submitedData;
+    await deleteCustomPrompt({ db, promptId: customPromptId, userId });
+
+    return json({ submission });
+  } else if (submitedData.type === "updateCustomPrompt") {
+    const { description, name, promptId, systemMessage, updateSystemMessage } =
+      submitedData;
+    await updateCustomPrompt({
+      db,
+      description,
+      name,
+      promptId,
       systemMessage,
       updateSystemMessage,
       userId,
@@ -99,6 +126,7 @@ export default function Component() {
                 name={prompt.name}
                 systemMessage={prompt.systemMessage}
                 updateSystemMessage={prompt.updateSystemMessage}
+                id={prompt.id}
               />
             );
           })}

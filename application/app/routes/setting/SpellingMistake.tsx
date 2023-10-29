@@ -57,7 +57,7 @@ export function SpellingMistakeForm() {
           id="spelling-mistake"
         />
       </div>
-      <div className="flex justify-start">
+      <div className="flex justify-end">
         <Button type="submit" className="flex gap-x-2">
           Update
           {isUpdatingSpellingMistake ? <ClipLoader size="16" /> : null}

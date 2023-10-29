@@ -1,6 +1,6 @@
 import { sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { WithDb } from "./utils";
-import { desc, eq } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 
 export const CustomPromptModel = sqliteTable("custom_prompt", {
   id: text("id")
@@ -57,4 +57,49 @@ export async function createCustomPrompt({
   }
 
   return createdCustomPrompt;
+}
+
+export async function updateCustomPrompt({
+  db,
+  description,
+  name,
+  promptId,
+  systemMessage,
+  updateSystemMessage,
+  userId,
+}: WithDb<{
+  userId: string;
+  name: string;
+  description: string;
+  systemMessage: string;
+  updateSystemMessage: string;
+  promptId: string;
+}>) {
+  await db
+    .update(CustomPromptModel)
+    .set({ description, name, systemMessage, updateSystemMessage })
+    .where(
+      and(
+        eq(CustomPromptModel.id, promptId),
+        eq(CustomPromptModel.userId, userId),
+      ),
+    );
+}
+
+export async function deleteCustomPrompt({
+  db,
+  promptId,
+  userId,
+}: WithDb<{
+  userId: string;
+  promptId: string;
+}>) {
+  await db
+    .delete(CustomPromptModel)
+    .where(
+      and(
+        eq(CustomPromptModel.userId, userId),
+        eq(CustomPromptModel.id, promptId),
+      ),
+    );
 }
