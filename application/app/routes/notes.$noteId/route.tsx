@@ -229,7 +229,7 @@ export default function Component() {
   }
 
   return (
-    <main>
+    <main className="container">
       <autoSaveFetcher.Form
         className="p-10 flex flex-col gap-y-4"
         method="POST"

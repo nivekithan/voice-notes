@@ -195,94 +195,98 @@ export default function Index() {
   }, [fetcher.state]);
 
   return (
-    <main className="flex flex-col gap-y-10 p-4">
-      <div className="flex items-center justify-center gap-x-2">
-        <h1 className="text-4xl font-bold">Notes</h1>
-        <Link
-          to="/setting"
-          prefetch="intent"
-          className="w-10 h-10 relative top-1"
-          unstable_viewTransition
-        >
-          <Button variant="ghost" size="icon" className="w-10 h-10">
-            <Settings width={22} height={22} />
-          </Button>
-        </Link>
-      </div>
-      <div className="grid grid-cols-4 gap-4 auto-rows-max">
-        <AllNotesPreview />
-      </div>
-      <div>
-        <Dialog open={isDialogOpen} onOpenChange={onDialogStateChange}>
-          <DialogTrigger asChild>
-            <Button type="button" variant="default" size="default">
-              Create new voice note
+    <div className="container py-4">
+      <main className="flex flex-col gap-y-10 ">
+        <div className="flex items-center justify-center gap-x-2">
+          <h1 className="text-4xl font-bold font-['Merriweather'] tracking-wide">
+            Notes
+          </h1>
+          <Link
+            to="/setting"
+            prefetch="intent"
+            className="w-10 h-10"
+            unstable_viewTransition
+          >
+            <Button variant="ghost" size="icon" className="w-10 h-10">
+              <Settings width={22} height={22} />
             </Button>
-          </DialogTrigger>
-
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>{dialogHeader[flowState]}</DialogTitle>
-              <DialogDescription>
-                {dialogDescription[flowState]}
-              </DialogDescription>
-            </DialogHeader>
-            {flowState === "RECORDING" ? (
-              <Recorder
-                isRecording={isRecording}
-                onMicClick={onMicClick}
-                timer={timer}
-                Visualizer={Visualizer}
-              />
-            ) : (
-              <div className="flex flex-col gap-y-4">
-                {prompts.map((value) => (
-                  <button
-                    type="button"
-                    className={`flex flex-col space-y-1.5 text-center sm:text-left border p-4 rounded-sm ${
-                      promtStyleId === value.id ? "border-primary" : ""
-                    }`}
-                    onClick={() => {
-                      setPromptStyleId(value.id);
-                    }}
-                    autoFocus={false}
-                  >
-                    <h3 className="text-lg font-semibold leading-none tracking-tight">
-                      {value.name}
-                    </h3>
-                    <p className="text-sm text-muted-foreground">
-                      {value.description}
-                    </p>
-                  </button>
-                ))}
-              </div>
-            )}
-            <DialogFooter>
-              <Button
-                disabled={
-                  flowState === "RECORDING"
-                    ? recordingStatus !== "PAUSED"
-                    : promtStyleId === null
-                }
-                type="button"
-                onClick={
-                  flowState === "RECORDING" ? onChooseStyles : onCreateNewNote
-                }
-                className="flex gap-x-2"
-              >
-                {finishFlow[flowState]}
-                {isLoading ? (
-                  <ClipLoader size="16" color="hsl(222.2,84%,4.9%)" />
-                ) : null}
+          </Link>
+        </div>
+        <div className="grid grid-cols-3 gap-4 auto-rows-max">
+          <AllNotesPreview />
+        </div>
+        <div>
+          <Dialog open={isDialogOpen} onOpenChange={onDialogStateChange}>
+            <DialogTrigger asChild>
+              <Button type="button" variant="default" size="default">
+                Create new voice note
               </Button>
-              <DialogClose asChild>
-                <Button variant="destructive">Cancel</Button>
-              </DialogClose>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      </div>
-    </main>
+            </DialogTrigger>
+
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>{dialogHeader[flowState]}</DialogTitle>
+                <DialogDescription>
+                  {dialogDescription[flowState]}
+                </DialogDescription>
+              </DialogHeader>
+              {flowState === "RECORDING" ? (
+                <Recorder
+                  isRecording={isRecording}
+                  onMicClick={onMicClick}
+                  timer={timer}
+                  Visualizer={Visualizer}
+                />
+              ) : (
+                <div className="flex flex-col gap-y-4">
+                  {prompts.map((value) => (
+                    <button
+                      type="button"
+                      className={`flex flex-col space-y-1.5 text-center sm:text-left border p-4 rounded-sm ${
+                        promtStyleId === value.id ? "border-primary" : ""
+                      }`}
+                      onClick={() => {
+                        setPromptStyleId(value.id);
+                      }}
+                      autoFocus={false}
+                    >
+                      <h3 className="text-lg font-semibold leading-none tracking-tight">
+                        {value.name}
+                      </h3>
+                      <p className="text-sm text-muted-foreground">
+                        {value.description}
+                      </p>
+                    </button>
+                  ))}
+                </div>
+              )}
+              <DialogFooter>
+                <Button
+                  disabled={
+                    flowState === "RECORDING"
+                      ? recordingStatus !== "PAUSED"
+                      : promtStyleId === null
+                  }
+                  type="button"
+                  onClick={
+                    flowState === "RECORDING" ? onChooseStyles : onCreateNewNote
+                  }
+                  className="flex gap-x-2"
+                >
+                  {finishFlow[flowState]}
+                  {isLoading ? (
+                    <ClipLoader size="16" color="hsl(222.2,84%,4.9%)" />
+                  ) : null}
+                </Button>
+                <DialogClose asChild>
+                  <Button variant="destructive">Cancel</Button>
+                </DialogClose>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </div>
+      </main>
+    </div>
   );
 }
 
