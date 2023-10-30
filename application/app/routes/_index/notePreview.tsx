@@ -23,7 +23,12 @@ type NotePreviewProps = {
 
 function NotePreview(note: NotePreviewProps) {
   return (
-    <Link to={`/notes/${note.id}`} key={note.id} prefetch="intent">
+    <Link
+      to={`/notes/${note.id}`}
+      key={note.id}
+      prefetch="intent"
+      unstable_viewTransition
+    >
       <Card className="hover:border-primary min-h-[150px]">
         <CardHeader className="flex flex-row justify-between gap-x-4 ">
           <div className="flex flex-col gap-y-1.5">

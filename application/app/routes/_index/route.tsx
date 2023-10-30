@@ -197,7 +197,12 @@ export default function Index() {
     <main className="flex flex-col gap-y-10 p-4">
       <div className="flex items-center justify-center gap-x-2">
         <h1 className="text-4xl font-bold">Notes</h1>
-        <Link to="/setting" className="w-10 h-10 relative top-1">
+        <Link
+          to="/setting"
+          prefetch="intent"
+          className="w-10 h-10 relative top-1"
+          unstable_viewTransition
+        >
           <Button variant="ghost" size="icon" className="w-10 h-10">
             <Settings width={22} height={22} />
           </Button>
