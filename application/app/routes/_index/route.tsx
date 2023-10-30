@@ -138,20 +138,20 @@ export default function Index() {
     fetcher.state === "submitting" || fetcher.state === "loading";
 
   async function onMicClick() {
-    if (isRecording) {
-      await pauseRecording();
-      return;
-    }
-
-    if (recordingStatus === "PAUSED") {
-      await resumeRecording();
-    } else {
+    if (recordingStatus === "STOPPED") {
       await startRecording();
+    } else if (recordingStatus === "PAUSED") {
+      await resumeRecording();
+    } else if (recordingStatus === "RECORDING") {
+      await pauseRecording();
     }
   }
 
   function onDialogStateChange(newState: boolean) {
-    setIsDialogOpen(newState);
+    if (isRecording) {
+      return;
+    }
+
     if (newState === false) {
       stopRecording().catch(() => {
         // Ignore the error Since there is a  chance the recording has never
@@ -159,6 +159,7 @@ export default function Index() {
       });
     }
 
+    setIsDialogOpen(newState);
     setFlowState("RECORDING");
     setPromptStyleId(prompts[0].id);
   }
