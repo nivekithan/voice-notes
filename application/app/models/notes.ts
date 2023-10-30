@@ -99,3 +99,13 @@ export async function updateContent({
     .set({ content })
     .where(and(eq(Notes.userId, userId), eq(Notes.id, noteId)));
 }
+
+export async function deleteNote({
+  db,
+  noteId,
+  userId,
+}: WithDb<{ userId: string; noteId: string }>) {
+  await db
+    .delete(Notes)
+    .where(and(eq(Notes.userId, userId), eq(Notes.id, noteId)));
+}

@@ -4,6 +4,7 @@ import {
   MetaArgs,
   MetaFunction,
   json,
+  redirect,
 } from "@remix-run/cloudflare";
 import { useActionData, useFetcher, useLoaderData } from "@remix-run/react";
 import { drizzle } from "drizzle-orm/d1";
@@ -11,7 +12,12 @@ import { z } from "zod";
 import { Separator } from "~/components/ui/separator";
 import { requireUser } from "~/lib/utils/auth.server";
 import { EnvVariables } from "~/lib/utils/env.server";
-import { getNotes, updateContent, updateTitleAndContent } from "~/models/notes";
+import {
+  deleteNote,
+  getNotes,
+  updateContent,
+  updateTitleAndContent,
+} from "~/models/notes";
 import { DebouncedAutosizeTextArea, DebouncedInput } from "./debouncedInput";
 import { conform, useForm } from "@conform-to/react";
 import { parse } from "@conform-to/zod";
@@ -32,6 +38,8 @@ import { updateTextWithAudio } from "~/lib/speechToText.server";
 import { useEffect, useState } from "react";
 import { ClipLoader } from "react-spinners";
 import { getSpellingMistake } from "~/models/spellingMistake";
+import { Delete } from "lucide-react";
+import { DeleteNote, DeleteNoteSchema } from "./deleteNote";
 
 const RouteParamSchema = z.object({ noteId: z.string() });
 
@@ -77,6 +85,7 @@ const UpdateNoteUsingAudioSchema = z.object({
   type: z.literal("updateNoteUsingAudio"),
 });
 
+export type NotePageAction = typeof action;
 export async function action({ request, context, params }: ActionFunctionArgs) {
   const env = context.env as EnvVariables;
   const userId = await requireUser(request, env);
@@ -88,6 +97,7 @@ export async function action({ request, context, params }: ActionFunctionArgs) {
     schema: z.discriminatedUnion("type", [
       UpdateNoteSchema,
       UpdateNoteUsingAudioSchema,
+      DeleteNoteSchema,
     ]),
   });
 
@@ -120,7 +130,7 @@ export async function action({ request, context, params }: ActionFunctionArgs) {
     }
 
     const promptId = note.promptId;
-    const prompt = findPrompt(promptId);
+    const prompt = await findPrompt({ db, promptId, userId });
 
     if (!prompt) {
       throw new Response("Invalid prompt Id", { status: 400 });
@@ -137,6 +147,9 @@ export async function action({ request, context, params }: ActionFunctionArgs) {
     });
 
     await updateContent({ content, db, noteId, userId });
+  } else if (parsedFormData.type === "deleteNote") {
+    await deleteNote({ db, noteId, userId });
+    throw redirect("/");
   } else {
     throw new Error("Unpected type");
   }
@@ -228,11 +241,14 @@ export default function Component() {
           {...conform.input(type)}
           value="updateNote"
         />
-        <DebouncedInput
-          {...conform.input(title)}
-          className="w-full bg-transparent text-muted-foreground outline-none text-2xl tracking-tight font-semibold leading-none"
-          defaultValue={note.title}
-        />
+        <div className="flex justify-between items-center">
+          <DebouncedInput
+            {...conform.input(title)}
+            className="w-full bg-transparent text-muted-foreground outline-none text-2xl tracking-tight font-semibold leading-none"
+            defaultValue={note.title}
+          />
+          <DeleteNote />
+        </div>
         <Separator />
         <DebouncedAutosizeTextArea
           {...{ ...conform.textarea(content), style: undefined }}

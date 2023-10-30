@@ -25,12 +25,6 @@ import { drizzle } from "drizzle-orm/d1";
 import { createNewNotes, getAllNotes } from "~/models/notes";
 import { ClipLoader } from "react-spinners";
 import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "~/components/ui/card";
-import {
   addInstructionAboutTitle,
   findPrompt,
   getWhitelistedPrompts,
@@ -38,6 +32,7 @@ import {
 import { Recorder } from "~/components/recorder";
 import { Settings } from "lucide-react";
 import { getSpellingMistake } from "~/models/spellingMistake";
+import { AllNotesPreview } from "./notePreview";
 
 export const meta: MetaFunction = () => {
   return [
@@ -62,6 +57,10 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 
   return json({ prompts: prompts, notes: allNotes });
 }
+
+export type HomeLoader = typeof loader;
+
+export type HomeAction = typeof action;
 
 export async function action({ request, context }: ActionFunctionArgs) {
   const env = context.env as EnvVariables;
@@ -117,7 +116,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
 type FlowState = "RECORDING" | "STYLES";
 
 export default function Index() {
-  const { prompts, notes } = useLoaderData<typeof loader>();
+  const { prompts } = useLoaderData<typeof loader>();
   const {
     pauseRecording,
     recordingStatus,
@@ -205,22 +204,7 @@ export default function Index() {
         </Link>
       </div>
       <div className="grid grid-cols-4 gap-4 auto-rows-max">
-        {notes.map((note) => {
-          return (
-            <Link to={`/notes/${note.id}`} key={note.id}>
-              <Card className="hover:border-primary min-h-[150px]">
-                <CardHeader>
-                  <CardTitle className="leading-8 line-clamp-2">
-                    {note.title}
-                  </CardTitle>
-                  <CardDescription className="line-clamp-3 leading-6">
-                    {note.content}
-                  </CardDescription>
-                </CardHeader>
-              </Card>
-            </Link>
-          );
-        })}
+        <AllNotesPreview />
       </div>
       <div>
         <Dialog open={isDialogOpen} onOpenChange={onDialogStateChange}>
