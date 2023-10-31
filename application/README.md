@@ -1,22 +1,25 @@
-# Welcome to Remix!
+# Welcome to Voice Notes 
 
-- [Remix Docs](https://remix.run/docs)
+Have you ever felt like you can express yourselves better while speaking than typing. Then this product is made for you. 
 
-## Development
+You convert free flowing thoughts into 
 
-You will be utilizing Wrangler for local development to emulate the Cloudflare runtime. This is already wired up in your package.json as the `dev` script:
+- List of points
+- Task List 
+- Notes
+- Email
+- Flashcard
+- Transcript
+- Or even create your style
 
-```sh
-# start the remix dev server and wrangler
-npm run dev
-```
+This product is built by using tech stack
 
-Open up [http://127.0.0.1:8788](http://127.0.0.1:8788) and you should be ready to go!
+- [Remix](https://remix.run/)
+- [Typescript](https://www.typescriptlang.org/)
+- [Hanko for Auth](https://www.hanko.io/)
+- [Openai API](https://openai.com/)
+- [Shadcn ui](https://ui.shadcn.com/)
+- [Cloudflare Workers](https://workers.cloudflare.com/) and [Cloudflare Functions](https://developers.cloudflare.com/pages/platform/functions/)
 
-## Deployment
 
-Cloudflare Pages are currently only deployable through their Git provider integrations.
 
-If you don't already have an account, then [create a Cloudflare account here](https://dash.cloudflare.com/sign-up/pages) and after verifying your email address with Cloudflare, go to your dashboard and follow the [Cloudflare Pages deployment guide](https://developers.cloudflare.com/pages/framework-guides/deploy-anything).
-
-Configure the "Build command" should be set to `npm run build`, and the "Build output directory" should be set to `public`.
