@@ -32,7 +32,7 @@ function NotePreview(note: NotePreviewProps) {
       <Card className="hover:border-primary min-h-[150px] transition-colors">
         <CardHeader className="flex flex-row justify-between gap-x-4 ">
           <div className="flex flex-col gap-y-1.5">
-            <CardTitle className="leading-8 line-clamp-2">
+            <CardTitle className="leading-8 line-clamp-2 text-cyan-400">
               {note.title}
             </CardTitle>
             <CardDescription className="line-clamp-3 leading-6">

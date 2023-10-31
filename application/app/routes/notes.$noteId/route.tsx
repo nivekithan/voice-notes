@@ -6,7 +6,12 @@ import {
   json,
   redirect,
 } from "@remix-run/cloudflare";
-import { useActionData, useFetcher, useLoaderData } from "@remix-run/react";
+import {
+  Link,
+  useActionData,
+  useFetcher,
+  useLoaderData,
+} from "@remix-run/react";
 import { drizzle } from "drizzle-orm/d1";
 import { z } from "zod";
 import { Separator } from "~/components/ui/separator";
@@ -38,7 +43,7 @@ import { updateTextWithAudio } from "~/lib/speechToText.server";
 import { useEffect, useState } from "react";
 import { ClipLoader } from "react-spinners";
 import { getSpellingMistake } from "~/models/spellingMistake";
-import { Delete } from "lucide-react";
+import { ChevronLeftCircle, Delete, Mic, Mic2 } from "lucide-react";
 import { DeleteNote, DeleteNoteSchema } from "./deleteNote";
 
 const RouteParamSchema = z.object({ noteId: z.string() });
@@ -199,10 +204,13 @@ export default function Component() {
     }
   }
 
-  function onRecorderDialogOpenChange(newState: boolean) {
+  async function onRecorderDialogOpenChange(newState: boolean) {
     if (isRecording || isAudioSubmitting) {
-      setIsRecorderDialogOpen(true);
       return;
+    }
+
+    if (newState === true) {
+      await startRecording();
     }
 
     setIsRecorderDialogOpen(newState);
@@ -242,11 +250,19 @@ export default function Component() {
           value="updateNote"
         />
         <div className="flex justify-between items-center">
-          <DebouncedInput
-            {...conform.input(title)}
-            className="w-full bg-transparent text-muted-foreground outline-none text-2xl tracking-tight font-semibold leading-none"
-            defaultValue={note.title}
-          />
+          <div className="flex gap-x-2 items-center w-full">
+            <Link
+              to="/"
+              className="text-gray-400 hover:text-cyan-400 transition-colors"
+            >
+              <ChevronLeftCircle />
+            </Link>
+            <DebouncedInput
+              {...conform.input(title)}
+              className="w-full bg-transparent text-muted-foreground outline-none text-2xl tracking-tight font-semibold leading-none text-cyan-400"
+              defaultValue={note.title}
+            />
+          </div>
           <DeleteNote />
         </div>
         <Separator />
@@ -261,9 +277,17 @@ export default function Component() {
         open={isRecorderDialogOpen}
         onOpenChange={onRecorderDialogOpenChange}
       >
-        <DialogTrigger asChild>
-          <Button>Add to note</Button>
-        </DialogTrigger>
+        <div className="fixed bottom-0 left-0 right-0 flex justify-center p-8">
+          <DialogTrigger asChild>
+            <Button
+              variant={"default"}
+              size="icon"
+              className="rounded-full w-12 h-12 bg-purple-800 hover:bg-purple-900 border-2 border-primary text-white"
+            >
+              <Mic size="24" />
+            </Button>
+          </DialogTrigger>
+        </div>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Add to note</DialogTitle>
@@ -281,11 +305,11 @@ export default function Component() {
             <Button
               type="button"
               onClick={onAddToNote}
-              className="flex gap-x-2"
+              className="flex gap-x-2 bg-purple-800 hover:bg-purple-900 text-white border-2 border-primary"
             >
               <span>Add to note</span>
               {isAudioSubmitting ? (
-                <ClipLoader size="16" color="hsl(222.2,84%,4.9%)" />
+                <ClipLoader size="16px" color="hsl(210,40%,98%)" />
               ) : null}
             </Button>
           </DialogFooter>

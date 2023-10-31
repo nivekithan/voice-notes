@@ -43,9 +43,9 @@ export function SpellingMistakeForm() {
         onChange={() => {}}
         value="updateSpellingMistake"
       />
-      <div className="flex flex-col gap-y-2">
+      <div className="flex flex-col gap-y-4">
         <Label
-          className="text-lg font-semibold tracking-none "
+          className="text-xl font-semibold tracking-none "
           htmlFor="spelling-mistake"
         >
           Common Ai spelling mistakes:
@@ -58,7 +58,10 @@ export function SpellingMistakeForm() {
         />
       </div>
       <div className="flex justify-end">
-        <Button type="submit" className="flex gap-x-2">
+        <Button
+          type="submit"
+          className="flex gap-x-2 bg-purple-800 hover:bg-purple-900 border-2 border-primary text-white font-semibold"
+        >
           Update
           {isUpdatingSpellingMistake ? <ClipLoader size="16" /> : null}
         </Button>

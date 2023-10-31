@@ -32,7 +32,12 @@ export function DeleteNote() {
         defaultValue={deleteNoteType}
         {...conform.input(typeConfig)}
       />
-      <Button variant="destructive" size="icon" type="submit">
+      <Button
+        variant="destructive"
+        size="icon"
+        type="submit"
+        className="border border-muted-foreground"
+      >
         {isDeletingNote ? (
           <ClipLoader size="16" color="hsl(210,40%,98%)" />
         ) : (

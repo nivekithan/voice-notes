@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Merriweather:wght@700&display=swap");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -64,6 +65,14 @@
     --input: 217.2 32.6% 17.5%;
     --ring: 212.7 26.8% 83.9%;
   }
+
+  hanko-auth {
+    --color: hsl(210, 40%, 98%);
+    --color-shade-1: hsl(217.2, 32.6%, 40.5%);
+    --color-shade-2: hsl(217.2, 32.6%, 15.5%);
+
+    --background-color: 222.2 84% 4.9%;
+  }
 }
 
 @layer base {
@@ -74,5 +83,3 @@
     @apply bg-background text-foreground;
   }
 }
-
-@import url("https://fonts.googleapis.com/css2?family=Merriweather:wght@700&display=swap");

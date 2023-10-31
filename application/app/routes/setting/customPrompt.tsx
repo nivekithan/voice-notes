@@ -66,7 +66,12 @@ export function CustomPrompt({
             defaultValue={deleteCustomPromptType}
           />
           <input {...conform.input(customPromptId)} hidden defaultValue={id} />
-          <Button variant="destructive" size="icon" type="submit">
+          <Button
+            variant="destructive"
+            size="icon"
+            type="submit"
+            className="border border-muted-foreground"
+          >
             {isdeletingPrompt ? (
               <ClipLoader size="16" color="hsl(210,40%,98%)" />
             ) : (

@@ -65,7 +65,12 @@ export function AddCustomPrompt() {
       onOpenChange={onChangeDialogState}
     >
       <DialogTrigger asChild>
-        <Button type="button">Add Custom Prompt</Button>
+        <Button
+          type="button"
+          className="bg-purple-800 hover:bg-purple-900 text-white font-semibold border-2 border-primary"
+        >
+          Add Custom Prompt
+        </Button>
       </DialogTrigger>
       <DialogContent>
         <addCustomPromptFetcher.Form
@@ -81,7 +86,10 @@ export function AddCustomPrompt() {
             updateSystemMessageConfig={updateSystemMessage}
           />
           <DialogFooter>
-            <Button type="submit" className="flex gap-x-2">
+            <Button
+              type="submit"
+              className="flex gap-x-2 bg-purple-800 hover:bg-purple-900 text-white font-semibold border-2 border-primary"
+            >
               Add Custom Prompt
               {isAddingCustomPrompt ? <ClipLoader size="16" /> : null}
             </Button>
@@ -179,7 +187,10 @@ export function EditCustomPrompt({
           />
 
           <DialogFooter>
-            <Button type="submit" className="flex gap-x-2">
+            <Button
+              type="submit"
+              className="flex gap-x-2 bg-purple-800 hover:bg-purple-900 text-white border-2 border-primary font-semibold"
+            >
               Edit Prompt
               {isEditingCustomPrompt ? <ClipLoader size="16" /> : null}
             </Button>
@@ -216,7 +227,7 @@ function CustomPromptForm({
   return (
     <>
       <div className="flex flex-col gap-y-3">
-        <Label className="text-lg font-semibold tracking-none">
+        <Label className="text-lg font-semibold tracking-none text-cyan-400">
           Custom Prompt Name:
         </Label>
         <Input
@@ -227,7 +238,7 @@ function CustomPromptForm({
       </div>
 
       <div className="flex flex-col gap-y-3">
-        <Label className="text-lg font-semibold tracking-none">
+        <Label className="text-lg font-semibold tracking-none text-cyan-400">
           Custom Prompt description:
         </Label>
         <Input
@@ -238,7 +249,7 @@ function CustomPromptForm({
       </div>
 
       <div className="flex flex-col gap-y-3">
-        <Label className="text-lg font-semibold tracking-none">
+        <Label className="text-lg font-semibold tracking-none  text-cyan-400">
           System message:
         </Label>
         <Textarea
@@ -249,7 +260,7 @@ function CustomPromptForm({
       </div>
 
       <div className="flex flex-col gap-y-3">
-        <Label className="text-lg font-semibold tracking-none">
+        <Label className="text-lg font-semibold tracking-none  text-cyan-400">
           System message when updating note:
         </Label>
         <Textarea

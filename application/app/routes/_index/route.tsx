@@ -30,9 +30,10 @@ import {
   getWhitelistedPrompts,
 } from "~/lib/prompt";
 import { Recorder } from "~/components/recorder";
-import { Settings } from "lucide-react";
+import { Mic, Settings } from "lucide-react";
 import { getSpellingMistake } from "~/models/spellingMistake";
 import { AllNotesPreview } from "./notePreview";
+import { ScrollArea } from "~/components/ui/scroll-area";
 
 export const meta: MetaFunction = () => {
   return [
@@ -147,21 +148,23 @@ export default function Index() {
     }
   }
 
-  function onDialogStateChange(newState: boolean) {
-    if (isRecording) {
+  async function onDialogStateChange(newState: boolean) {
+    if (isRecording || isLoading) {
       return;
     }
 
-    if (newState === false) {
+    if (!newState) {
       stopRecording().catch(() => {
         // Ignore the error Since there is a  chance the recording has never
         // been started
       });
+      setFlowState("RECORDING");
+      setPromptStyleId(prompts[0].id);
+    } else {
+      await startRecording();
     }
 
     setIsDialogOpen(newState);
-    setFlowState("RECORDING");
-    setPromptStyleId(prompts[0].id);
   }
 
   function onChooseStyles() {
@@ -190,7 +193,7 @@ export default function Index() {
 
   useEffect(() => {
     if (fetcher.state === "idle") {
-      setIsDialogOpen(false);
+      onDialogStateChange(false);
     }
   }, [fetcher.state]);
 
@@ -217,12 +220,17 @@ export default function Index() {
         </div>
         <div>
           <Dialog open={isDialogOpen} onOpenChange={onDialogStateChange}>
-            <DialogTrigger asChild>
-              <Button type="button" variant="default" size="default">
-                Create new voice note
-              </Button>
-            </DialogTrigger>
-
+            <div className="fixed bottom-0 left-0 right-0 flex justify-center py-8">
+              <DialogTrigger asChild>
+                <Button
+                  variant="default"
+                  size="icon"
+                  className="w-12 h-12 rounded-full bg-purple-800 text-white hover:bg-purple-900 border-2 border-primary"
+                >
+                  <Mic size="24" />
+                </Button>
+              </DialogTrigger>
+            </div>
             <DialogContent>
               <DialogHeader>
                 <DialogTitle>{dialogHeader[flowState]}</DialogTitle>
@@ -250,7 +258,7 @@ export default function Index() {
                       }}
                       autoFocus={false}
                     >
-                      <h3 className="text-lg font-semibold leading-none tracking-tight">
+                      <h3 className="text-lg font-semibold leading-none tracking-tight text-cyan-400">
                         {value.name}
                       </h3>
                       <p className="text-sm text-muted-foreground">
@@ -271,16 +279,13 @@ export default function Index() {
                   onClick={
                     flowState === "RECORDING" ? onChooseStyles : onCreateNewNote
                   }
-                  className="flex gap-x-2"
+                  className="flex gap-x-2 bg-purple-800 hover:bg-purple-900 text-white border-2 border-primary"
                 >
                   {finishFlow[flowState]}
                   {isLoading ? (
-                    <ClipLoader size="16" color="hsl(222.2,84%,4.9%)" />
+                    <ClipLoader size="16px" color="hsl(210,40%,98%)" />
                   ) : null}
                 </Button>
-                <DialogClose asChild>
-                  <Button variant="destructive">Cancel</Button>
-                </DialogClose>
               </DialogFooter>
             </DialogContent>
           </Dialog>
