@@ -215,7 +215,7 @@ export default function Index() {
             </Button>
           </Link>
         </div>
-        <div className="grid grid-cols-3 gap-4 auto-rows-max">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 auto-rows-max">
           <AllNotesPreview />
         </div>
         <div>
