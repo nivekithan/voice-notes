@@ -259,7 +259,7 @@ export default function Component() {
             </Link>
             <DebouncedInput
               {...conform.input(title)}
-              className="w-full bg-transparent text-muted-foreground outline-none text-2xl tracking-tight font-semibold leading-none text-cyan-400"
+              className="w-full bg-transparent outline-none text-2xl tracking-tight font-semibold leading-none text-cyan-400"
               defaultValue={note.title}
             />
           </div>
