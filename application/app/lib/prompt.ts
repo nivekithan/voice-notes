@@ -1,12 +1,21 @@
 import { getAllCustomPrompts, getCustomPrompt } from "~/models/customPrompt";
 import { WithDb } from "~/models/utils";
 
+type PromptIcons =
+  | "podcast"
+  | "list-checks"
+  | "sticky-note"
+  | "list"
+  | "mail"
+  | "file-question"
+  | "wrench";
 type Prompt = {
   id: string;
   systemMessage: string;
   updateSystemMessage: string;
   name: string;
   description: string;
+  icons: PromptIcons;
 };
 
 export const prompts: Prompt[] = [
@@ -14,13 +23,14 @@ export const prompts: Prompt[] = [
     id: "transcribe",
     description: "Transcibe your audio as it is",
     name: "Transcribe",
+    icons: "podcast",
     systemMessage: `You are a highly skilled AI trained in language comprehension. I would like you to read the following following text and process it. In processing you will follow these instructions
 		- You will fix all spelling mistakes
 		- You will mot remove any filler words
 		- You will not add any new words.
 		- You will not modify any new words other than for fixing spelling mistakes.
 		- You will not modify any sentences
-    - You will divide these texts into paragraphs
+    - You will divide these texts into phs
 		
 		First line of your answer should be title of processed text. In next line there should processed text. Title should not start with "Title:". Title should be in plain text without markdown`,
 
@@ -68,10 +78,11 @@ export const prompts: Prompt[] = [
     - <task> should be simplified without changing its meaning
 
     You will the share only the modified "task list"`,
+    icons: "list-checks",
   },
   {
     id: "note",
-    name: "Note",
+    name: "Notes",
     description: "Clarify and simplify your though",
     systemMessage: `You are a highly skilled Ai trained in language comprehension. I would like you to read the following text and process it. While processing you will follow these rules
     
@@ -87,6 +98,7 @@ export const prompts: Prompt[] = [
     - You will combine both the sections and make new response which clarifies and simplifies both of these section without changing the original meaning.
     - You will divde the response into pragraph. So that it is easy to understand.
     - Response text should be easy to understand by even non native english speaker. `,
+    icons: "sticky-note",
   },
   {
     id: "list",
@@ -106,6 +118,7 @@ export const prompts: Prompt[] = [
     - You will process the text into bullet points of main ideas
     - Main ideas must be simple to understand
     - Bullet points must be in markdown format`,
+    icons: "list",
   },
   {
     id: "email",
@@ -125,21 +138,29 @@ export const prompts: Prompt[] = [
     - You will generate new email which combines both "Current Text" and "New Text".
     - Email must be simple to understand
     - Email should be in markdown format`,
+    icons: "mail",
   },
   {
     id: "flashcard",
     name: "Flashcard",
     description: "Generate a list of question answer pairs",
+    icons: "file-question",
     systemMessage: `You are a highly skilled Ai trained on Ai langugae comprenhension. I would like you read the following text and process it. In the processing you will follow these rules.
     
     - You will fix the spelling mistakes and remove the filler words
-    - You will the text into a list of question and answer pairs. So that it can be used as flashcard
+    - You will convert the text into a list of question and answer pairs. So that it can be used as flashcard
     - Question should be one line only
     - Answer also should be one line only
     - The response should in markdown format
     
     The first line of response must be the title of flashcard and it must be in plain text.`,
-    updateSystemMessage: ``,
+    updateSystemMessage: `You are highly skilled Ai trained on Ai langugae comprenhension. There would be two sections "Current Text" and "New Text" section. "Current section" will contain question and answer pairs. "New section" will contain new text. You will read both of section and process them based on these rules.
+    
+    - You will fix the spelling mistakes and remove the filler words
+    - You will convert the text into new list of question and answers paris. So that it can be as flashcard.
+    - Question should be one line only
+    - Answer also should be one line only
+    - The response should be in markdown format`,
   },
 ];
 
@@ -151,6 +172,7 @@ export async function getWhitelistedPrompts({
     id: string;
     description: string;
     name: string;
+    icon: PromptIcons;
   }[] = [];
 
   prompts.forEach((prompt) => {
@@ -158,6 +180,7 @@ export async function getWhitelistedPrompts({
       id: prompt.id,
       description: prompt.description,
       name: prompt.name,
+      icon: prompt.icons,
     });
   });
   const allCustomPrompts = await getAllCustomPrompts({ db, userId });
@@ -167,6 +190,7 @@ export async function getWhitelistedPrompts({
       description: prompt.description,
       id: prompt.id,
       name: prompt.name,
+      icon: "wrench",
     });
   });
 
@@ -190,7 +214,7 @@ export async function findPrompt({
     return null;
   }
 
-  return { ...customPrompt, type: "custom" } as const;
+  return { ...customPrompt, type: "custom", icons: "wrench" } as const;
 }
 
 export function addInstructionAboutTitle(currentSystemMessage: string) {

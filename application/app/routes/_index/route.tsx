@@ -30,7 +30,17 @@ import {
   getWhitelistedPrompts,
 } from "~/lib/prompt";
 import { Recorder } from "~/components/recorder";
-import { Mic, Settings } from "lucide-react";
+import {
+  FileQuestion,
+  List,
+  ListChecks,
+  Mail,
+  Mic,
+  Podcast,
+  Settings,
+  StickyNote,
+  Wrench,
+} from "lucide-react";
 import { getSpellingMistake } from "~/models/spellingMistake";
 import { AllNotesPreview } from "./notePreview";
 import { ScrollArea } from "~/components/ui/scroll-area";
@@ -246,27 +256,54 @@ export default function Index() {
                   Visualizer={Visualizer}
                 />
               ) : (
-                <div className="flex flex-col gap-y-4">
-                  {prompts.map((value) => (
-                    <button
-                      type="button"
-                      className={`flex flex-col space-y-1.5 text-center sm:text-left border p-4 rounded-sm ${
-                        promtStyleId === value.id ? "border-primary" : ""
-                      }`}
-                      onClick={() => {
-                        setPromptStyleId(value.id);
-                      }}
-                      autoFocus={false}
-                    >
-                      <h3 className="text-lg font-semibold leading-none tracking-tight text-cyan-400">
-                        {value.name}
-                      </h3>
-                      <p className="text-sm text-muted-foreground">
-                        {value.description}
-                      </p>
-                    </button>
-                  ))}
-                </div>
+                <ScrollArea className="max-h-[600px] rounded-md p-4 ">
+                  <div className="flex flex-col gap-y-4">
+                    {prompts.map((value) => (
+                      <button
+                        type="button"
+                        className={`flex gap-x-3 items-center text-center sm:text-left border p-4 rounded-sm ${
+                          promtStyleId === value.id ? "border-primary" : ""
+                        }`}
+                        onClick={() => {
+                          setPromptStyleId(value.id);
+                        }}
+                        autoFocus={false}
+                      >
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          className="grid place-items-center text-primary"
+                        >
+                          {(() => {
+                            if (value.icon === "podcast") {
+                              return <Podcast size="20" />;
+                            } else if (value.icon === "list-checks") {
+                              return <ListChecks size="20" />;
+                            } else if (value.icon === "sticky-note") {
+                              return <StickyNote size="20" />;
+                            } else if (value.icon === "list") {
+                              return <List size="20" />;
+                            } else if (value.icon === "mail") {
+                              return <Mail size="20" />;
+                            } else if (value.icon === "file-question") {
+                              return <FileQuestion size="20" />;
+                            } else {
+                              return <Wrench size="20" />;
+                            }
+                          })()}
+                        </Button>
+                        <div className="flex flex-col gap-y-2">
+                          <h3 className="text-lg font-semibold leading-none tracking-tight text-cyan-400">
+                            {value.name}
+                          </h3>
+                          <p className="text-sm text-muted-foreground">
+                            {value.description}
+                          </p>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </ScrollArea>
               )}
               <DialogFooter>
                 <Button
