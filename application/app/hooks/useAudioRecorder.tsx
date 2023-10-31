@@ -19,8 +19,11 @@ export function useAudioRecorder() {
   })();
 
   function _stopTimer() {
-    clearInterval(intervalId);
+    if (intervalId) {
+      clearInterval(intervalId);
+    }
     setIntervalId(null);
+    setTimer(0);
   }
 
   function _pauseTimer() {
@@ -29,7 +32,6 @@ export function useAudioRecorder() {
   }
 
   function _startTimer() {
-    setTimer(0);
     const intervalId = setInterval(() => setTimer((i) => i + 1), 1_000);
     setIntervalId(intervalId as unknown as number);
   }
@@ -56,9 +58,7 @@ export function useAudioRecorder() {
     const audioBlob = await audioRecorder.stop();
     audioRecorderRef.current = null;
 
-    if (intervalId) {
-      _stopTimer();
-    }
+    _stopTimer();
     return audioBlob;
   }
 
