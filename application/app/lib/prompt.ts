@@ -21,7 +21,7 @@ type Prompt = {
 export const prompts: Prompt[] = [
   {
     id: "transcribe",
-    description: "Transcibe your audio as it is",
+    description: "Convert your audio to text as it is",
     name: "Transcribe",
     icons: "podcast",
     systemMessage: `You are a highly skilled AI trained in language comprehension. I would like you to read the following following text and process it. In processing you will follow these instructions
@@ -83,7 +83,7 @@ export const prompts: Prompt[] = [
   {
     id: "note",
     name: "Notes",
-    description: "Clarify and simplify your though",
+    description: "Clarify and simplify your thought",
     systemMessage: `You are a highly skilled Ai trained in language comprehension. I would like you to read the following text and process it. While processing you will follow these rules
     
     - You will fix the spelling mistakes and remove the filler words.
@@ -123,7 +123,7 @@ export const prompts: Prompt[] = [
   {
     id: "email",
     name: "Email",
-    description: "Convert your idea to a formal email",
+    description: "Convert your audio into a formal email",
     systemMessage: `You are a highly skilled Ai trained in language comprenhension. I would like you read the following text and process it. In the processing you will follow these rules.
     
     - You will fix the spelling mistakes and remove the filler words

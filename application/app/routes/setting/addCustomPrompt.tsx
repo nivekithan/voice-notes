@@ -227,7 +227,7 @@ function CustomPromptForm({
   return (
     <>
       <div className="flex flex-col gap-y-3">
-        <Label className="text-lg font-semibold tracking-none text-cyan-400">
+        <Label className="text-lg font-semibold tracking-none">
           Custom Prompt Name:
         </Label>
         <Input
@@ -238,7 +238,7 @@ function CustomPromptForm({
       </div>
 
       <div className="flex flex-col gap-y-3">
-        <Label className="text-lg font-semibold tracking-none text-cyan-400">
+        <Label className="text-lg font-semibold tracking-none">
           Custom Prompt description:
         </Label>
         <Input
@@ -249,7 +249,7 @@ function CustomPromptForm({
       </div>
 
       <div className="flex flex-col gap-y-3">
-        <Label className="text-lg font-semibold tracking-none  text-cyan-400">
+        <Label className="text-lg font-semibold tracking-none ">
           System message:
         </Label>
         <Textarea
@@ -260,7 +260,7 @@ function CustomPromptForm({
       </div>
 
       <div className="flex flex-col gap-y-3">
-        <Label className="text-lg font-semibold tracking-none  text-cyan-400">
+        <Label className="text-lg font-semibold tracking-none ">
           System message when updating note:
         </Label>
         <Textarea
